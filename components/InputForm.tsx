@@ -205,14 +205,19 @@ export default function InputForm() {
 
         {input.taxRegime === 'SIMPLES_NACIONAL' && (
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Alíquota Efetiva Simples (%)</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Taxa do Simples (DAS) %
+            </label>
             <input 
               type="number" 
               value={input.simplesNacionalRate}
               onChange={e => setInput({...input, simplesNacionalRate: parseFloat(e.target.value) || 0})}
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
-              placeholder="Ex: 4.0"
+              placeholder="Ex: 4.0 (Início Padrão)"
             />
+            <p className="text-[10px] text-gray-400 mt-1">
+              Geralmente inicia em <strong className="text-gray-600">4%</strong> para comércio. Consulte seu contador.
+            </p>
           </div>
         )}
       </div>
