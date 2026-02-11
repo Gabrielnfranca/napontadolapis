@@ -31,8 +31,31 @@ export default function ResultsCard() {
 
   return (
     <div className="space-y-6">
-      {/* Cards Principais */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Cards Principais - Layout ajustado para 4 cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Card 1: Custo Unitário Final (Novo Destaque) */}
+        <div className="p-4 rounded-xl border border-blue-100 bg-blue-50" title="Quanto custa cada unidade do produto já na sua mão (com frete e impostos).">
+          <h3 className="text-sm font-medium text-gray-600 mb-1">Custo Final (Unitário)</h3>
+          <div className="text-2xl font-bold text-gray-900">
+            R$ {result.landedCostUnit.toFixed(2)}
+          </div>
+          <div className="text-xs text-gray-600 mt-1">
+            Na sua mão
+          </div>
+        </div>
+
+        {/* Card 2: Preço Zero a Zero */}
+        <div className="p-4 rounded-xl border border-gray-100 bg-white" title="Preço de venda onde você não tem lucro nem prejuízo.">
+          <h3 className="text-sm font-medium text-gray-500 mb-1">Preço Zero a Zero</h3>
+          <div className="text-2xl font-bold text-gray-700">
+            R$ {result.breakEvenPrice.toFixed(2)}
+          </div>
+          <div className="text-xs text-gray-500 mt-1">
+            Preço Mínimo
+          </div>
+        </div>
+
+        {/* Card 3: Lucro Líquido */}
         <div className={`p-4 rounded-xl border ${isProfit ? 'border-green-100' : 'border-red-100'} ${bgHealthColor} relative overflow-hidden`}>
           <div className="relative z-10">
             <h3 className="text-sm font-medium text-gray-500 mb-1">Lucro Líquido</h3>
@@ -43,9 +66,9 @@ export default function ResultsCard() {
               Margem: <span className="font-bold">{result.netMargin.toFixed(2)}%</span>
             </div>
           </div>
-          <TrendingUp className={`absolute right-[-10px] bottom-[-10px] w-24 h-24 opacity-10 ${healthColor}`} />
         </div>
 
+        {/* Card 4: ROI */}
         <div className="p-4 rounded-xl border border-gray-100 bg-white" title="Retorno sobre o Investimento: Quanto o dinheiro cresceu.">
           <h3 className="text-sm font-medium text-gray-500 mb-1">ROI (Retorno)</h3>
           <div className="text-2xl font-bold text-blue-600">
@@ -53,16 +76,6 @@ export default function ResultsCard() {
           </div>
           <div className="text-xs text-gray-500 mt-1">
             Rentabilidade
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl border border-gray-100 bg-white" title="Preço de venda onde você não tem lucro nem prejuízo.">
-          <h3 className="text-sm font-medium text-gray-500 mb-1">Preço Zero a Zero</h3>
-          <div className="text-2xl font-bold text-gray-700">
-            R$ {result.breakEvenPrice.toFixed(2)}
-          </div>
-          <div className="text-xs text-gray-500 mt-1">
-            Preço Mínimo
           </div>
         </div>
       </div>
