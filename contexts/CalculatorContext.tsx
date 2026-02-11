@@ -31,10 +31,10 @@ const DEFAULT_INPUT: CalculationInput = {
   quantity: 1,
   freightValue: 0,
   freightCurrency: 'USD',
-  exchangeRate: 5.80, // Valor inicial seguro
-  spreadPercent: 4.38,
-  iofPercent: 1.1, // IOF conta PJ
-  icmsRate: 17,
+  exchangeRate: 0, // Será preenchido pela API
+  spreadPercent: 0,
+  iofPercent: 0, 
+  icmsRate: 0,
   taxRegime: 'MEI',
   simplesNacionalRate: 0,
   salePriceBRL: 0,
