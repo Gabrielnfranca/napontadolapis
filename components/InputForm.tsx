@@ -40,16 +40,33 @@ export default function InputForm() {
   
   // Estado local para controlar o input de Outras Despesas permitindo edição de decimais (ex: 0.50)
   const [localExtraExpenses, setLocalExtraExpenses] = useState(input.extraExpenses?.toString() || '');
+  const [localProductCost, setLocalProductCost] = useState(input.productCostValue?.toString() || '');
+  const [localFreightValue, setLocalFreightValue] = useState(input.freightValue?.toString() || '');
+  const [localSalePrice, setLocalSalePrice] = useState(input.salePriceBRL?.toString() || '');
 
-  // Sincroniza o estado local quando o valor global muda (ex: Clicou nos botões de atalho)
+  // Sincroniza o estado local quando o valor global muda (ex: Clicou nos botões de atalho ou carregou)
   useEffect(() => {
-     // Só atualiza se o valor numérico for diferente, para não atrapalhar a digitação de "0."
-     // Substitui vírgula por ponto antes de comparar para suportar formato PT-BR
-     const currentNum = parseFloat(localExtraExpenses.replace(',', '.')) || 0;
-     if (currentNum !== input.extraExpenses) {
-        setLocalExtraExpenses(input.extraExpenses === 0 ? '' : input.extraExpenses.toString());
+     // Só atualiza se o valor numérico for diferente, para não atrapalhar a digitação
+     const currentExtra = parseFloat(localExtraExpenses.replace(',', '.')) || 0;
+     if (currentExtra !== input.extraExpenses) {
+        setLocalExtraExpenses(input.extraExpenses === 0 ? '' : input.extraExpenses.toString().replace('.', ','));
      }
-  }, [input.extraExpenses]);
+
+     const currentProduct = parseFloat(localProductCost.replace(',', '.')) || 0;
+     if (currentProduct !== input.productCostValue) {
+        setLocalProductCost(input.productCostValue === 0 ? '' : input.productCostValue.toString().replace('.', ','));
+     }
+
+     const currentFreight = parseFloat(localFreightValue.replace(',', '.')) || 0;
+     if (currentFreight !== input.freightValue) {
+        setLocalFreightValue(input.freightValue === 0 ? '' : input.freightValue.toString().replace('.', ','));
+     }
+
+     const currentSale = parseFloat(localSalePrice.replace(',', '.')) || 0;
+     if (currentSale !== input.salePriceBRL) {
+        setLocalSalePrice(input.salePriceBRL === 0 ? '' : input.salePriceBRL.toString().replace('.', ','));
+     }
+  }, [input.extraExpenses, input.productCostValue, input.freightValue, input.salePriceBRL]);
 
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = STATES_ICMS.find(s => s.uf === e.target.value);
@@ -109,11 +126,17 @@ export default function InputForm() {
                 {input.productCurrency === 'USD' ? <DollarSign className="w-4 h-4" /> : <span className="text-xs font-bold">R$</span>}
               </div>
               <input 
-                type="number" 
-                value={input.productCostValue || ''}
-                onChange={e => setInput({...input, productCostValue: parseFloat(e.target.value) || 0})}
+                type="text" 
+                inputMode="decimal"
+                value={localProductCost}
+                onChange={e => {
+                  const val = e.target.value.replace(/[^0-9.,]/g, '');
+                  setLocalProductCost(val);
+                  const numericVal = parseFloat(val.replace(',', '.')) || 0;
+                  setInput({...input, productCostValue: numericVal});
+                }}
                 className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:outline-none border-r-0"
-                placeholder="0.00"
+                placeholder="0,00"
               />
             </div>
             <button 
@@ -146,11 +169,17 @@ export default function InputForm() {
           <div className="relative flex-1">
             <Truck className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
             <input 
-              type="number" 
-              value={input.freightValue || ''}
-              onChange={e => setInput({...input, freightValue: parseFloat(e.target.value) || 0})}
+              type="text" 
+              inputMode="decimal"
+              value={localFreightValue}
+              onChange={e => {
+                const val = e.target.value.replace(/[^0-9.,]/g, '');
+                setLocalFreightValue(val);
+                const numericVal = parseFloat(val.replace(',', '.')) || 0;
+                setInput({...input, freightValue: numericVal});
+              }}
               className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:outline-none border-r-0"
-              placeholder="Valor do Frete"
+              placeholder="0,00"
             />
           </div>
           <button 
@@ -304,9 +333,15 @@ export default function InputForm() {
             <div className="relative">
               <span className="absolute left-3 top-2 text-gray-500 text-sm">R$</span>
               <input    
-                type="number" 
-                value={input.salePriceBRL || ''}
-                onChange={e => setInput({...input, salePriceBRL: parseFloat(e.target.value) || 0})}
+                type="text" 
+                inputMode="decimal"
+                value={localSalePrice}
+                onChange={e => {
+                  const val = e.target.value.replace(/[^0-9.,]/g, '');
+                  setLocalSalePrice(val);
+                  const numericVal = parseFloat(val.replace(',', '.')) || 0;
+                  setInput({...input, salePriceBRL: numericVal});
+                }}
                 className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none font-semibold text-gray-900"
               />
             </div>
