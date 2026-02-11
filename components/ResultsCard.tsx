@@ -46,18 +46,18 @@ export default function ResultsCard() {
           <TrendingUp className={`absolute right-[-10px] bottom-[-10px] w-24 h-24 opacity-10 ${healthColor}`} />
         </div>
 
-        <div className="p-4 rounded-xl border border-gray-100 bg-white">
-          <h3 className="text-sm font-medium text-gray-500 mb-1">ROI</h3>
+        <div className="p-4 rounded-xl border border-gray-100 bg-white" title="Retorno sobre o Investimento: Quanto o dinheiro cresceu.">
+          <h3 className="text-sm font-medium text-gray-500 mb-1">ROI (Retorno)</h3>
           <div className="text-2xl font-bold text-blue-600">
             {result.roi.toFixed(1)}%
           </div>
           <div className="text-xs text-gray-500 mt-1">
-            Retorno s/ Investimento
+            Rentabilidade
           </div>
         </div>
 
-        <div className="p-4 rounded-xl border border-gray-100 bg-white">
-          <h3 className="text-sm font-medium text-gray-500 mb-1">Break-even</h3>
+        <div className="p-4 rounded-xl border border-gray-100 bg-white" title="Preço de venda onde você não tem lucro nem prejuízo.">
+          <h3 className="text-sm font-medium text-gray-500 mb-1">Preço Zero a Zero</h3>
           <div className="text-2xl font-bold text-gray-700">
             R$ {result.breakEvenPrice.toFixed(2)}
           </div>
@@ -91,7 +91,9 @@ export default function ResultsCard() {
 
           {/* Custo Landed */}
           <div className="flex justify-between items-center py-2 bg-gray-50 px-2 rounded -mx-2">
-            <span className="font-bold text-gray-700">Landed Cost (Na Mão)</span>
+            <span className="font-bold text-gray-700" title="Quanto custou o produto após chegar no Brasil com todos os impostos pagos">
+              Custo Final (Na Mão)
+            </span>
             <span className="font-bold text-gray-900">R$ {result.landedCostUnit.toFixed(2)}</span>
           </div>
 
