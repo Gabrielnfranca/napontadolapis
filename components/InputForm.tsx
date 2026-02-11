@@ -253,8 +253,8 @@ export default function InputForm() {
                 >
                   {input.marketplace === 'SHOPEE' ? (
                     <>
-                      <option value="SEM_FRETE_GRATIS">Padrão (14%)</option>
-                      <option value="COM_FRETE_GRATIS">Frete Extra (+6%)</option>
+                      <option value="SEM_FRETE_GRATIS">Padrão</option>
+                      <option value="COM_FRETE_GRATIS">Programa Frete Grátis</option>
                     </>
                   ) : (
                     <>
@@ -263,6 +263,19 @@ export default function InputForm() {
                     </>
                   )}
                 </select>
+                {/* Legenda Dinâmica das Taxas */}
+                <div className="mt-1 text-xs text-gray-500 flex items-start gap-1">
+                  <span className="text-purple-600 font-bold">ℹ️ Custo:</span>
+                  {input.marketplace === 'SHOPEE' ? (
+                    input.announcementType === 'COM_FRETE_GRATIS' 
+                      ? '20% (14% Padrão + 6% Frete Extra)' 
+                      : '14% + R$ 4,00 por item'
+                  ) : (
+                    input.announcementType === 'PREMIUM'
+                      ? '~ 17% (Exposição Alta + Parc. s/ Juros)'
+                      : '~ 12% (Exposição Média)'
+                  )}
+                </div>
               </div>
           </div>
         </div>
