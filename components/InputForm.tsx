@@ -252,7 +252,19 @@ export default function InputForm() {
                </label>
                <select 
                   value={input.marketplace}
-                  onChange={e => setInput({...input, marketplace: e.target.value as any})}
+                  onChange={e => {
+                    const newMarketplace = e.target.value as any;
+                    // Resetar o tipo de anúncio para o padrão do novo marketplace
+                    const defaultAnnouncement = newMarketplace === 'SHOPEE' 
+                      ? 'SEM_FRETE_GRATIS' 
+                      : 'CLASSICO';
+                    
+                    setInput({
+                      ...input, 
+                      marketplace: newMarketplace,
+                      announcementType: defaultAnnouncement
+                    });
+                  }}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white"
                 >
                   <option value="SHOPEE">Shopee</option>
