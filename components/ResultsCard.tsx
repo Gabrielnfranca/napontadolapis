@@ -8,6 +8,23 @@ export default function ResultsCard() {
 
   if (!result) return <div className="p-6 text-center text-gray-400">Preencha os dados para calcular</div>;
 
+  // Verificação de estado inicial (zerado)
+  const isZeroState = input.productCostValue === 0 && input.salePriceBRL === 0;
+
+  if (isZeroState) {
+    return (
+      <div className="text-center p-8 bg-white border border-gray-100 rounded-xl">
+        <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <DollarSign className="w-8 h-8 text-blue-500" />
+        </div>
+        <h3 className="text-lg font-bold text-gray-800 mb-2">Aguardando Dados</h3>
+        <p className="text-gray-500 max-w-sm mx-auto">
+          Preencha o Custo do Produto e o Preço de Venda para visualizar a análise de viabilidade e os custos detalhados.
+        </p>
+      </div>
+    );
+  }
+
   const isProfit = result.netProfit > 0;
   const healthColor = isProfit ? (result.netMargin > 15 ? 'text-green-600' : 'text-yellow-600') : 'text-red-600';
   const bgHealthColor = isProfit ? (result.netMargin > 15 ? 'bg-green-50' : 'bg-yellow-50') : 'bg-red-50';
