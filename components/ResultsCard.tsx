@@ -31,8 +31,8 @@ export default function ResultsCard() {
 
   return (
     <div className="space-y-6">
-      {/* Cards Principais - Layout ajustado para 4 cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {/* Cards Principais - Layout ajustado para 2x2 para melhor leitura */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Card 1: Custo Unitário Final (Novo Destaque) */}
         <div className="p-4 rounded-xl border border-blue-100 bg-blue-50" title="Quanto custa cada unidade do produto já na sua mão (com frete e impostos).">
           <h3 className="text-sm font-medium text-gray-600 mb-1">Custo Final (Unitário)</h3>
