@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useCalculator } from '@/contexts/CalculatorContext';
-import { DollarSign, Truck, Percent, ShoppingBag, Settings2, RefreshCw } from 'lucide-react';
+import { DollarSign, Truck, Percent, ShoppingBag, Settings2, RefreshCw, Eraser } from 'lucide-react';
 
 const STATES_ICMS = [
   { uf: 'PADRAO', name: 'Padrão Remessa Conforme', rate: 17 },
@@ -93,17 +93,58 @@ export default function InputForm() {
   };
 
   const handleFreightCurrencyToggle = () => {
+    const isToBRL = input.freightCurrency === 'USD';
+    const rate = input.exchangeRate || 5.0; // Fallback seguro
+    const currentVal = input.freightValue;
+    
+    let newVal = currentVal;
+    if (currentVal > 0) {
+       // Se está indo para BRL, multiplica. Se indo para USD, divide.
+       newVal = isToBRL ? currentVal * rate : currentVal / rate;
+    }
+
     setInput(prev => ({
       ...prev,
-      freightCurrency: prev.freightCurrency === 'USD' ? 'BRL' : 'USD'
+      freightCurrency: isToBRL ? 'BRL' : 'USD',
+      freightValue: newVal
     }));
+    setLocalFreightValue(newVal ? formatATM(newVal) : '');
   };
 
   const handleProductCurrencyToggle = () => {
+    const isToBRL = input.productCurrency === 'USD';
+    const rate = input.exchangeRate || 5.0;
+    const currentVal = input.productCostValue;
+    
+    let newVal = currentVal;
+    if (currentVal > 0) {
+       newVal = isToBRL ? currentVal * rate : currentVal / rate;
+    }
+
     setInput(prev => ({
       ...prev,
-      productCurrency: prev.productCurrency === 'USD' ? 'BRL' : 'USD'
+      productCurrency: isToBRL ? 'BRL' : 'USD',
+      productCostValue: newVal
     }));
+    setLocalProductCost(newVal ? formatATM(newVal) : '');
+  };
+
+  const clearCalculator = () => {
+      // Reseta inputs específicos para 0 mas mantem configurações
+      setInput(prev => ({
+          ...prev,
+          productCostValue: 0,
+          quantity: 1,
+          freightValue: 0,
+          extraExpenses: 0,
+          productName: '',
+          sku: '',
+          productFeatures: '' 
+      }));
+      setLocalProductCost('');
+      setLocalFreightValue('');
+      setLocalExtraExpenses('');
+      setLocalSalePrice('');
   };
 
   return (
@@ -131,6 +172,15 @@ export default function InputForm() {
              <RefreshCw className={`w-3.5 h-3.5 ${isLoadingDollar ? 'animate-spin' : ''}`} />
            </button>
         </div>
+        
+        <button 
+           onClick={clearCalculator}
+           className="flex items-center gap-1 text-xs font-medium text-red-500 hover:text-red-700 bg-red-50 px-2 py-1 rounded hover:bg-red-100 transition-colors"
+           title="Limpar valores da calculadora"
+        >
+           <Eraser className="w-3.5 h-3.5" />
+           Limpar
+        </button>
       </div>
 
       {/* Custo e Quantidade */}
