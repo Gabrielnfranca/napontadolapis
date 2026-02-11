@@ -230,32 +230,40 @@ export default function InputForm() {
           </div>
           
           <div className="grid grid-cols-2 gap-4">
-             <select 
-                value={input.marketplace}
-                onChange={e => setInput({...input, marketplace: e.target.value as any})}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white"
-              >
-                <option value="SHOPEE">Shopee</option>
-                <option value="MERCADO_LIVRE">Mercado Livre</option>
-              </select>
+             <div>
+               <label className="block text-xs font-medium text-gray-500 mb-1" title="Escolha onde vai vender para calcularmos as comissões corretas">
+                 Canal de Venda ℹ️
+               </label>
+               <select 
+                  value={input.marketplace}
+                  onChange={e => setInput({...input, marketplace: e.target.value as any})}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white"
+                >
+                  <option value="SHOPEE">Shopee</option>
+                  <option value="MERCADO_LIVRE">Mercado Livre</option>
+                </select>
+             </div>
 
-              <select 
-                value={input.announcementType}
-                onChange={e => setInput({...input, announcementType: e.target.value as any})}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white"
-              >
-                {input.marketplace === 'SHOPEE' ? (
-                  <>
-                    <option value="SEM_FRETE_GRATIS">Padrão (14%)</option>
-                    <option value="COM_FRETE_GRATIS">Frete Extra (+6%)</option>
-                  </>
-                ) : (
-                  <>
-                    <option value="CLASSICO">Clássico</option>
-                    <option value="PREMIUM">Premium</option>
-                  </>
-                )}
-              </select>
+              <div>
+               <label className="block text-xs font-medium text-gray-500 mb-1">Tipo de Anúncio</label>
+                <select 
+                  value={input.announcementType}
+                  onChange={e => setInput({...input, announcementType: e.target.value as any})}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white"
+                >
+                  {input.marketplace === 'SHOPEE' ? (
+                    <>
+                      <option value="SEM_FRETE_GRATIS">Padrão (14%)</option>
+                      <option value="COM_FRETE_GRATIS">Frete Extra (+6%)</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="CLASSICO">Clássico</option>
+                      <option value="PREMIUM">Premium</option>
+                    </>
+                  )}
+                </select>
+              </div>
           </div>
         </div>
       </div>
