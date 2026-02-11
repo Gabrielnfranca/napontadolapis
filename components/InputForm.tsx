@@ -36,6 +36,18 @@ const STATES_ICMS = [
 
 export default function InputForm() {
   const { input, setInput, isLoadingDollar, refreshDollar } = useCalculator();
+  
+  // Estado local para controlar o input de Outras Despesas permitindo edição de decimais (ex: 0.50)
+  const [localExtraExpenses, setLocalExtraExpenses] = React.useState(input.extraExpenses?.toString() || '');
+
+  // Sincroniza o estado local quando o valor global muda (ex: Clicou nos botões de atalho)
+  React.useEffect(() => {
+     // Só atualiza se o valor numérico for diferente, para não atrapalhar a digitação de "0."
+     const currentNum = parseFloat(localExtraExpenses) || 0;
+     if (currentNum !== input.extraExpenses) {
+        setLocalExtraExpenses(input.extraExpenses === 0 ? '' : input.extraExpenses.toString());
+     }
+  }, [input.extraExpenses]);
 
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = STATES_ICMS.find(s => s.uf === e.target.value);
@@ -168,8 +180,12 @@ export default function InputForm() {
             type="number" 
             step="0.01"
             min="0"
-            value={input.extraExpenses || ''}
-            onChange={e => setInput({...input, extraExpenses: parseFloat(e.target.value) || 0})}
+            value={localExtraExpenses}
+            onChange={e => {
+              const val = e.target.value;
+              setLocalExtraExpenses(val); // Atualiza visual
+              setInput({...input, extraExpenses: parseFloat(val) || 0}); // Atualiza cálculo
+            }}
             className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
             placeholder="0.00"
           />
