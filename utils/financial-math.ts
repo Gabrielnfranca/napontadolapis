@@ -152,6 +152,7 @@ export const calculateLandedCost = (input: CalculationInput): CalculationResult 
   let commissionRate = 0;
   let fixedFee = 0;
   let maxFee = Infinity; // Teto da comissão
+  let marketplaceShippingSupport = 0; // Custo de frete do marketplace (Subsídio)
 
   // Configuração Mercado Livre
   if (marketplace === 'MERCADO_LIVRE') {
@@ -188,14 +189,9 @@ export const calculateLandedCost = (input: CalculationInput): CalculationResult 
   if (commissionValue > maxFee) commissionValue = maxFee;
 
   // Custo de Frete do Marketplace (Subsídio do Vendedor)
-  // No ML, obrigatório frete grátis acima de R$ 79. Custo varia por peso/região. 
-  // Vamos estimar um custo médio de saída se o preço > 79.
-  // Para MVP: Se > 79 no ML, avisar ou chutar um valor base (ex: R$ 20,00). 
-  // Idealmente isso seria um input do usuário "Custo Frete Saída".
-  // Vamos deixar ZERO por enquanto, mas o UI deve alertar.
-  let marketplaceShippingSupport = 0;
-  // TODO: Adicionar input para Custo Frete Saída no futuro.
-
+  // No ML, obrigatório frete grátis acima de R$ 79 e o vendedor paga parte ou tudo.
+  // Já calculado acima nas regras do Marketplace.
+  
   // Imposto de Saída (Simples Nacional / MEI)
   let outputTax = 0;
   if (taxRegime === 'MEI') {
