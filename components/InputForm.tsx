@@ -1,7 +1,7 @@
 'use client';
 
 import { useCalculator } from '@/contexts/CalculatorContext';
-import { DollarSign, Truck, Percent, ShoppingBag, Settings2 } from 'lucide-react';
+import { DollarSign, Truck, Percent, ShoppingBag, Settings2, RefreshCw } from 'lucide-react';
 
 const STATES_ICMS = [
   { uf: 'PADRAO', name: 'Padrão Remessa Conforme', rate: 17 },
@@ -65,13 +65,24 @@ export default function InputForm() {
           <Settings2 className="w-5 h-5 text-blue-600" />
           Parâmetros de Entrada
         </h2>
-        <button 
-          onClick={refreshDollar}
-          className="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-100 transition-colors flex items-center gap-1"
-        >
-          USD {input.exchangeRate.toFixed(2)}
-          {isLoadingDollar && <span className="animate-spin">↻</span>}
-        </button>
+        <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-lg shadow-sm">
+           <span className="relative flex h-2 w-2">
+             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+           </span>
+           <div className="flex flex-col items-start leading-none ml-1">
+             <span className="text-[10px] text-emerald-600 font-medium uppercase tracking-wide">Dólar Hoje</span>
+             <span className="text-sm font-bold text-emerald-700">R$ {input.exchangeRate.toFixed(2)}</span>
+           </div>
+           <div className="h-6 w-px bg-emerald-200 mx-1"></div>
+           <button 
+             onClick={refreshDollar} 
+             className="text-emerald-600 hover:text-emerald-800 p-1 rounded-full hover:bg-emerald-100 transition-colors" 
+             title="Atualizar Cotação"
+           >
+             <RefreshCw className={`w-3.5 h-3.5 ${isLoadingDollar ? 'animate-spin' : ''}`} />
+           </button>
+        </div>
       </div>
 
       {/* Custo e Quantidade */}
