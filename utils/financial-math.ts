@@ -155,23 +155,32 @@ export const calculateLandedCost = (input: CalculationInput): CalculationResult 
 
   // Configuração Mercado Livre
   if (marketplace === 'MERCADO_LIVRE') {
-    // Taxa Fixa: R$ 6.00 a R$ 6.75 para itens abaixo de R$ 79 (prompt diz R$ 6.75)
+    // Taxa Fixa: R$ 6.00 para itens abaixo de R$ 79
     if (salePriceBRL < 79) {
-      fixedFee = 6.75; // Valor atualizado 2025 (pode variar, mas vamos usar o input do prompt)
+      fixedFee = 6.00;
+    } else {
+      // ACIMA DE R$ 79: O Vendedor paga o Frete (Frete Grátis obrigatório)
+      // Estimativa conservadora para pacote pequeno (0.5kg - 1kg). 
+      // Em produção, isso deveria ser um input do usuário, mas 0 estava dando lucro falso.
+      marketplaceShippingSupport = 20.90; 
     }
     
-    if (announcementType === 'CLASSICO') commissionRate = 0.12; // Média categorias (10-14%)
-    if (announcementType === 'PREMIUM') commissionRate = 0.17; // Média (15-19%)
+    if (announcementType === 'CLASSICO') commissionRate = 0.12; // Média 12%
+    if (announcementType === 'PREMIUM') commissionRate = 0.17; // Média 17%
     
   } 
   // Configuração Shopee
   else if (marketplace === 'SHOPEE') {
-    fixedFee = 4.00; // Por item vendido
-    maxFee = 103; // Teto atualizado (R$ 100 + R$ 3 de transação? Prompt diz R$ 100) -> Usar R$ 100
-    maxFee = 100;
+    fixedFee = 4.00; // Taxa fixa por item (Atualizado 2025)
+    maxFee = 100; // Teto da comissão padrão
 
-    if (announcementType === 'SEM_FRETE_GRATIS') commissionRate = 0.14; // Padrão + Transação
-    if (announcementType === 'COM_FRETE_GRATIS') commissionRate = 0.14 + 0.06; // Programa Frete Grátis Extra (+6%)
+    if (announcementType === 'SEM_FRETE_GRATIS') commissionRate = 0.14; // 14% Padrão
+    if (announcementType === 'COM_FRETE_GRATIS') {
+       // Frete Grátis Extra: 14% + 6% = 20%
+       // O teto de R$ 100 geralmente aplica-se à comissão padrão. 
+       // A taxa de serviço (6%) tem regras variadas, vamos somar tudo por segurança.
+       commissionRate = 0.20; 
+    }
   }
 
   // Cálculo da Comissão
