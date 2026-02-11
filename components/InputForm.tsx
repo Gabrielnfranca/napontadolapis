@@ -216,7 +216,6 @@ export default function InputForm() {
           <span className="absolute left-3 top-2 text-gray-500 text-sm font-bold">R$</span>
           <input 
             type="text" 
-            inputMode="decimal"
             value={localExtraExpenses}
             inputMode="numeric"
             onChange={e => handleMoneyChange(e.target.value, 'extraExpenses', setLocalExtraExpenses)}
