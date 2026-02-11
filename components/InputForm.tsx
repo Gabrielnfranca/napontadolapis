@@ -215,7 +215,9 @@ export default function InputForm() {
         
         <div className="grid grid-cols-1 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Preço de Venda (BRL)</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Preço de Venda <span className="text-xs text-purple-600 font-normal ml-1">(Dica: Teste o preço do concorrente)</span>
+            </label>
             <div className="relative">
               <span className="absolute left-3 top-2 text-gray-500 text-sm">R$</span>
               <input 
