@@ -139,6 +139,7 @@ export function CalculatorProvider({ children }: { children: ReactNode }) {
         productName: data.name, 
         sku: data.sku, 
         productFeatures: data.features,
+        category: data.category,
         referenceText: data.reference // Salvando no histórico
     };
     

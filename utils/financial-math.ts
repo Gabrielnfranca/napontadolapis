@@ -8,6 +8,7 @@ export interface CalculationInput {
   // Identificação (Novo)
   productName: string;
   productFeatures?: string; // Características para IA
+  category?: string;
   sku: string;
 
   // Dados do Produto (Fornecedor)
