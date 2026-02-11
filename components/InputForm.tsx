@@ -44,7 +44,8 @@ export default function InputForm() {
   // Sincroniza o estado local quando o valor global muda (ex: Clicou nos botões de atalho)
   useEffect(() => {
      // Só atualiza se o valor numérico for diferente, para não atrapalhar a digitação de "0."
-     const currentNum = parseFloat(localExtraExpenses) || 0;
+     // Substitui vírgula por ponto antes de comparar para suportar formato PT-BR
+     const currentNum = parseFloat(localExtraExpenses.replace(',', '.')) || 0;
      if (currentNum !== input.extraExpenses) {
         setLocalExtraExpenses(input.extraExpenses === 0 ? '' : input.extraExpenses.toString());
      }
@@ -178,17 +179,20 @@ export default function InputForm() {
         <div className="relative">
           <span className="absolute left-3 top-2 text-gray-500 text-sm font-bold">R$</span>
           <input 
-            type="number" 
-            step="0.01"
-            min="0"
+            type="text" 
+            inputMode="decimal"
             value={localExtraExpenses}
             onChange={e => {
-              const val = e.target.value;
+              // Permite apenas números, ponto e vírgula
+              const val = e.target.value.replace(/[^0-9.,]/g, '');
               setLocalExtraExpenses(val); // Atualiza visual
-              setInput({...input, extraExpenses: parseFloat(val) || 0}); // Atualiza cálculo
+              
+              // Converte para Float (JS usa ponto)
+              const numericVal = parseFloat(val.replace(',', '.')) || 0;
+              setInput({...input, extraExpenses: numericVal}); // Atualiza cálculo
             }}
             className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            placeholder="0.00"
+            placeholder="0,00"
           />
         </div>
         
