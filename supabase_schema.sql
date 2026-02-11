@@ -16,7 +16,12 @@ create table saved_skus (
 -- ATENÇÃO: Em produção real com Auth, você usaria RLS (Row Level Security).
 alter table saved_skus enable row level security;
 
-create policy "Public Access"
+-- Remove políticas antigas para evitar conflitos
+drop policy if exists "Acesso Total" on saved_skus;
+drop policy if exists "Public Access" on saved_skus;
+drop policy if exists "Acesso Publico Total" on saved_skus;
+
+create policy "Acesso Total"
 on saved_skus
 for all
 using (true)
