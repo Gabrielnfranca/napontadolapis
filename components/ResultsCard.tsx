@@ -3,8 +3,13 @@
 import { useCalculator } from '@/contexts/CalculatorContext';
 import { ArrowDown, ArrowUp, AlertTriangle, TrendingUp, DollarSign, Package } from 'lucide-react';
 
-export default function ResultsCard() {
-  const { result, input, saveCurrentSKU } = useCalculator();
+
+interface ResultsCardProps {
+  onRequestSave?: () => void;
+}
+
+export default function ResultsCard({ onRequestSave }: ResultsCardProps) {
+  const { result, input } = useCalculator();
 
   if (!result) return <div className="p-6 text-center text-gray-400">Preencha os dados para calcular</div>;
 
@@ -144,17 +149,13 @@ export default function ResultsCard() {
       {/* Botão Salvar SKU */}
       <div className="pt-4">
         <button
-          onClick={() => {
-            const name = prompt("Nome para identificar esta simulação:");
-            if (name) {
-               saveCurrentSKU(name);
-               alert("Simulação salva! Acesse 'Meus Produtos' para gerar o SKU.");
-            }
-          }}
-          className="w-full bg-gray-900 hover:bg-black text-white py-3 rounded-lg font-bold transition-colors shadow-lg flex items-center justify-center gap-2"
+          onClick={onRequestSave}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-200 flex items-center justify-center gap-2 group"
         >
-          <DollarSign className="w-4 h-4" />
-          Salvar Simulação
+          <div className="bg-white/20 p-1.5 rounded-lg group-hover:scale-110 transition-transform">
+             <Package className="w-5 h-5 text-white" />
+          </div>
+          SALVAR PRODUTO E GERAR ANÚNCIO (IA)
         </button>
       </div>
     </div>

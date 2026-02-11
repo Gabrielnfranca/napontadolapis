@@ -9,6 +9,7 @@ export interface SavedSKU extends CalculationResult {
   name: string;
   createdAt: string;
   input: CalculationInput;
+  marketing_kit?: any; // Dados gerados pela IA
 }
 
 interface CalculatorContextData {
@@ -16,7 +17,7 @@ interface CalculatorContextData {
   setInput: React.Dispatch<React.SetStateAction<CalculationInput>>;
   result: CalculationResult | null;
   savedSKUs: SavedSKU[];
-  saveCurrentSKU: (name: string) => Promise<void>;
+  saveFullProduct: (data: {name: string, sku: string, category: string, features: string, reference?: string}) => Promise<void>;
   updateSavedSKU: (id: string, updates: Partial<SavedSKU>) => Promise<void>;
   deleteSKU: (id: string) => Promise<void>;
   isLoadingDollar: boolean;
@@ -26,6 +27,7 @@ interface CalculatorContextData {
 const DEFAULT_INPUT: CalculationInput = {
   productName: '',
   sku: '',
+  productFeatures: '',
   productCostValue: 0,
   productCurrency: 'USD',
   quantity: 1,
@@ -111,38 +113,78 @@ export function CalculatorProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const saveCurrentSKU = async (name: string) => {
+  const saveFullProduct = async (data: {name: string, sku: string, category: string, features: string, reference?: string}) => {
     if (!result) return;
     
-    // Preparar dados para o banco
-    const inputToSave = { ...input, sku: '' }; // Salva sem SKU inicialmente
+    // 1. Gerar IA Copy (Gemini)
+    let marketingData = null;
+    try {
+       const res = await fetch('/api/generate-copy', {
+          method: 'POST',
+          body: JSON.stringify({
+            productName: data.name,
+            features: data.features,
+            reference: data.reference
+          })
+       });
+       if (res.ok) {
+         marketingData = await res.json();
+       }
+    } catch (e) {
+      console.error("Erro ao gerar copy na hora de salvar", e);
+    }
+
+    const inputToSave = { 
+        ...input, 
+        productName: data.name, 
+        sku: data.sku, 
+        productFeatures: data.features,
+        referenceText: data.reference // Salvando no histórico
+    };
     
-    const { data, error } = await supabase
+    const { data: dbData, error } = await supabase
       .from('saved_skus')
       .insert({
-        name,
+        name: data.name,
+        sku_code: data.sku,
         input_data: inputToSave,
-        result_data: result,
+        result_data: {
+            ...result,
+            marketing_kit: marketingData // Salvo dentro do result
+        },
         net_profit: result.netProfit,
-        net_margin: result.netMargin,
-        sku_code: ''
+        net_margin: result.netMargin
       })
       .select()
       .single();
 
     if (error) {
-      alert('Erro ao salvar no Supabase: ' + error.message + '\nVerifique se criou a tabela rodando o script SQL.');
-      return;
+       console.error('Erro Supabase:', error);
+       alert('Erro ao salvar: ' + error.message);
+       // Fallback LocalStorage para não perder dados
+       const newSKU: SavedSKU = {
+          id: crypto.randomUUID(), 
+          name: data.name,
+          createdAt: new Date().toISOString(),
+          input: inputToSave,
+          ...result,
+       };
+       // @ts-ignore
+       newSKU.marketing_kit = marketingData;
+       
+       const currentSaved = JSON.parse(localStorage.getItem('napontadolapis_skus') || '[]');
+       localStorage.setItem('napontadolapis_skus', JSON.stringify([newSKU, ...currentSaved]));
+       setSavedSKUs(prev => [newSKU, ...prev]);
+       return;
     }
 
-    if (data) {
-      // Adiciona ao estado local imediatamente com o ID real do banco
+    if (dbData) {
       const newSKU: SavedSKU = {
-        id: data.id,
-        name: data.name,
-        createdAt: data.created_at,
-        input: data.input_data,
-        ...data.result_data
+        id: dbData.id,
+        name: dbData.name,
+        createdAt: dbData.created_at,
+        input: dbData.input_data,
+        ...dbData.result_data
       };
       setSavedSKUs(prev => [newSKU, ...prev]);
     }
@@ -168,6 +210,24 @@ export function CalculatorProvider({ children }: { children: ReactNode }) {
     
     // Se update tem name
     if (updates.name) payload.name = updates.name;
+
+    // Se update tem marketing_kit, precisamos atualizar o result_data inteiro no banco
+    if (updates.marketing_kit) {
+        // Encontrar o SKU atual para pegar os resultados financeiros existentes
+        const currentSku = savedSKUs.find(s => s.id === id);
+        if (currentSku) {
+             // Reconstrói o objeto result_data com os dados antigos + novo marketing_kit
+             const { id: _id, name: _name, createdAt: _createdAt, input: _input, marketing_kit: _oldMkt, ...financialResults } = currentSku;
+             
+             payload.result_data = {
+                 ...financialResults,
+                 marketing_kit: updates.marketing_kit
+             };
+        }
+    }
+    
+    // Se update tem result fields (cálculo), também atualizaria result_data
+    // Isso seria mais complexo se quiséssemos suportar edição de cálculo inline, mas por hora foca no marketing_kit.
 
     const { error } = await supabase
       .from('saved_skus')
@@ -206,7 +266,7 @@ export function CalculatorProvider({ children }: { children: ReactNode }) {
       setInput,
       result,
       savedSKUs,
-      saveCurrentSKU,
+      saveFullProduct,
       updateSavedSKU,
       deleteSKU,
       isLoadingDollar,

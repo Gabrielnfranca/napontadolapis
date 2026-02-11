@@ -1,11 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import InputForm from '@/components/InputForm';
 import ResultsCard from '@/components/ResultsCard';
+import SaveProductModal from '@/components/SaveProductModal';
 import { Calculator, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Home() {
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+
   return (
       <main className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto space-y-8">
@@ -50,11 +54,17 @@ export default function Home() {
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                   Análise de Viabilidade
                 </h2>
-                <ResultsCard />
+                <ResultsCard onRequestSave={() => setIsSaveModalOpen(true)} />
               </div>
             </div>
 
           </div>
+
+          {/* Modal de Salvamento */}
+          <SaveProductModal 
+            isOpen={isSaveModalOpen} 
+            onClose={() => setIsSaveModalOpen(false)} 
+          />
         </div>
       </main>
   );

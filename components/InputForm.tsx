@@ -38,35 +38,52 @@ const STATES_ICMS = [
 export default function InputForm() {
   const { input, setInput, isLoadingDollar, refreshDollar } = useCalculator();
   
-  // Estado local para controlar o input de Outras Despesas permitindo edição de decimais (ex: 0.50)
-  const [localExtraExpenses, setLocalExtraExpenses] = useState(input.extraExpenses?.toString() || '');
-  const [localProductCost, setLocalProductCost] = useState(input.productCostValue?.toString() || '');
-  const [localFreightValue, setLocalFreightValue] = useState(input.freightValue?.toString() || '');
-  const [localSalePrice, setLocalSalePrice] = useState(input.salePriceBRL?.toString() || '');
+  // Estado local para ATM style input (Mascara de Dinheiro)
+  const formatATM = (val: number) => val.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+  const [localExtraExpenses, setLocalExtraExpenses] = useState('');
+  const [localProductCost, setLocalProductCost] = useState('');
+  const [localFreightValue, setLocalFreightValue] = useState('');
+  const [localSalePrice, setLocalSalePrice] = useState('');
 
   // Sincroniza o estado local quando o valor global muda (ex: Clicou nos botões de atalho ou carregou)
   useEffect(() => {
-     // Só atualiza se o valor numérico for diferente, para não atrapalhar a digitação
-     const currentExtra = parseFloat(localExtraExpenses.replace(',', '.')) || 0;
-     if (currentExtra !== input.extraExpenses) {
-        setLocalExtraExpenses(input.extraExpenses === 0 ? '' : input.extraExpenses.toString().replace('.', ','));
+     // Formata o valor do contexto para o visual (ex: 12.5 -> "12,50")
+     if (input.extraExpenses !== parseFloat(localExtraExpenses.replace(/\./g, '').replace(',', '.') || '0')) {
+        setLocalExtraExpenses(input.extraExpenses ? formatATM(input.extraExpenses) : ''); 
      }
-
-     const currentProduct = parseFloat(localProductCost.replace(',', '.')) || 0;
-     if (currentProduct !== input.productCostValue) {
-        setLocalProductCost(input.productCostValue === 0 ? '' : input.productCostValue.toString().replace('.', ','));
+     if (input.productCostValue !== parseFloat(localProductCost.replace(/\./g, '').replace(',', '.') || '0')) {
+        setLocalProductCost(input.productCostValue ? formatATM(input.productCostValue) : '');
      }
-
-     const currentFreight = parseFloat(localFreightValue.replace(',', '.')) || 0;
-     if (currentFreight !== input.freightValue) {
-        setLocalFreightValue(input.freightValue === 0 ? '' : input.freightValue.toString().replace('.', ','));
+     if (input.freightValue !== parseFloat(localFreightValue.replace(/\./g, '').replace(',', '.') || '0')) {
+        setLocalFreightValue(input.freightValue ? formatATM(input.freightValue) : '');
      }
-
-     const currentSale = parseFloat(localSalePrice.replace(',', '.')) || 0;
-     if (currentSale !== input.salePriceBRL) {
-        setLocalSalePrice(input.salePriceBRL === 0 ? '' : input.salePriceBRL.toString().replace('.', ','));
+     if (input.salePriceBRL !== parseFloat(localSalePrice.replace(/\./g, '').replace(',', '.') || '0')) {
+        setLocalSalePrice(input.salePriceBRL ? formatATM(input.salePriceBRL) : '');
      }
   }, [input.extraExpenses, input.productCostValue, input.freightValue, input.salePriceBRL]);
+
+  // Função genérica para input tipo ATM (digita numeros, viram centavos)
+  const handleMoneyChange = (value: string, field: keyof typeof input, setLocal: (v: string) => void) => {
+      // Remove tudo que não for dígito
+      const onlyDigits = value.replace(/\D/g, '');
+      
+      // Se vazio, zera
+      if (!onlyDigits) {
+          setLocal('');
+          setInput(prev => ({ ...prev, [field]: 0 }));
+          return;
+      }
+
+      // Converte para float (ex: "1234" -> 12.34)
+      const numberValue = parseInt(onlyDigits, 10) / 100;
+      
+      // Atualiza localmente formatado
+      setLocal(formatATM(numberValue));
+      
+      // Atualiza no contexto global
+      setInput(prev => ({ ...prev, [field]: numberValue }));
+  };
 
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = STATES_ICMS.find(s => s.uf === e.target.value);
@@ -127,14 +144,9 @@ export default function InputForm() {
               </div>
               <input 
                 type="text" 
-                inputMode="decimal"
+                inputMode="numeric"
                 value={localProductCost}
-                onChange={e => {
-                  const val = e.target.value.replace(/[^0-9.,]/g, '');
-                  setLocalProductCost(val);
-                  const numericVal = parseFloat(val.replace(',', '.')) || 0;
-                  setInput({...input, productCostValue: numericVal});
-                }}
+                onChange={e => handleMoneyChange(e.target.value, 'productCostValue', setLocalProductCost)}
                 className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:outline-none border-r-0"
                 placeholder="0,00"
               />
@@ -170,14 +182,9 @@ export default function InputForm() {
             <Truck className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
             <input 
               type="text" 
-              inputMode="decimal"
+              inputMode="numeric"
               value={localFreightValue}
-              onChange={e => {
-                const val = e.target.value.replace(/[^0-9.,]/g, '');
-                setLocalFreightValue(val);
-                const numericVal = parseFloat(val.replace(',', '.')) || 0;
-                setInput({...input, freightValue: numericVal});
-              }}
+              onChange={e => handleMoneyChange(e.target.value, 'freightValue', setLocalFreightValue)}
               className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:outline-none border-r-0"
               placeholder="0,00"
             />
@@ -211,15 +218,8 @@ export default function InputForm() {
             type="text" 
             inputMode="decimal"
             value={localExtraExpenses}
-            onChange={e => {
-              // Permite apenas números, ponto e vírgula
-              const val = e.target.value.replace(/[^0-9.,]/g, '');
-              setLocalExtraExpenses(val); // Atualiza visual
-              
-              // Converte para Float (JS usa ponto)
-              const numericVal = parseFloat(val.replace(',', '.')) || 0;
-              setInput({...input, extraExpenses: numericVal}); // Atualiza cálculo
-            }}
+            inputMode="numeric"
+            onChange={e => handleMoneyChange(e.target.value, 'extraExpenses', setLocalExtraExpenses)}
             className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
             placeholder="0,00"
           />
@@ -334,14 +334,9 @@ export default function InputForm() {
               <span className="absolute left-3 top-2 text-gray-500 text-sm">R$</span>
               <input    
                 type="text" 
-                inputMode="decimal"
+                inputMode="numeric"
                 value={localSalePrice}
-                onChange={e => {
-                  const val = e.target.value.replace(/[^0-9.,]/g, '');
-                  setLocalSalePrice(val);
-                  const numericVal = parseFloat(val.replace(',', '.')) || 0;
-                  setInput({...input, salePriceBRL: numericVal});
-                }}
+                onChange={e => handleMoneyChange(e.target.value, 'salePriceBRL', setLocalSalePrice)}
                 className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none font-semibold text-gray-900"
               />
             </div>
@@ -409,6 +404,18 @@ export default function InputForm() {
               </div>
           </div>
         </div>
+      </div>
+      
+      <div className="bg-amber-50 border-t border-amber-100 p-4 -mx-6 -mb-6 rounded-b-xl flex items-start gap-3">
+          <span className="text-xl">⚠️</span>
+          <div>
+             <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wide">Aviso Importante</h4>
+             <p className="text-[11px] text-amber-900/80 leading-relaxed text-justify mt-1">
+                Os cálculos apresentados são <span className="font-bold">estimativas</span> para auxiliar na tomada de decisão. 
+                Taxas de câmbio (Dólar, Spread), tributos aduaneiros (Imposto de Importação, ICMS) e custos logísticos podem sofrer 
+                variações imprevisíveis no momento real da importação. Sempre considere uma margem de segurança.
+             </p>
+          </div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ export type AnnouncementType = 'CLASSICO' | 'PREMIUM' | 'SEM_FRETE_GRATIS' | 'CO
 export interface CalculationInput {
   // Identificação (Novo)
   productName: string;
+  productFeatures?: string; // Características para IA
   sku: string;
 
   // Dados do Produto (Fornecedor)
