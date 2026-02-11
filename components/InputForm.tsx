@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useCalculator } from '@/contexts/CalculatorContext';
 import { DollarSign, Truck, Percent, ShoppingBag, Settings2, RefreshCw } from 'lucide-react';
 
@@ -38,10 +39,10 @@ export default function InputForm() {
   const { input, setInput, isLoadingDollar, refreshDollar } = useCalculator();
   
   // Estado local para controlar o input de Outras Despesas permitindo edição de decimais (ex: 0.50)
-  const [localExtraExpenses, setLocalExtraExpenses] = React.useState(input.extraExpenses?.toString() || '');
+  const [localExtraExpenses, setLocalExtraExpenses] = useState(input.extraExpenses?.toString() || '');
 
   // Sincroniza o estado local quando o valor global muda (ex: Clicou nos botões de atalho)
-  React.useEffect(() => {
+  useEffect(() => {
      // Só atualiza se o valor numérico for diferente, para não atrapalhar a digitação de "0."
      const currentNum = parseFloat(localExtraExpenses) || 0;
      if (currentNum !== input.extraExpenses) {
@@ -298,7 +299,7 @@ export default function InputForm() {
             </label>
             <div className="relative">
               <span className="absolute left-3 top-2 text-gray-500 text-sm">R$</span>
-              <input 
+              <input    
                 type="number" 
                 value={input.salePriceBRL || ''}
                 onChange={e => setInput({...input, salePriceBRL: parseFloat(e.target.value) || 0})}
