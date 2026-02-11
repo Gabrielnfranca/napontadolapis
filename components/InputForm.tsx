@@ -157,6 +157,23 @@ export default function InputForm() {
         </p>
       </div>
 
+      {/* Outras Despesas (Novo Campo) */}
+      <div>
+        <label className="block text-sm font-medium text-gray-600 mb-1" title="Adicione custos como: Despacho Postal, Taxa DHL, Armazenagem, Capatazia (Total)">
+          Outras Despesas (R$ Total)
+        </label>
+        <div className="relative">
+          <span className="absolute left-3 top-2 text-gray-500 text-sm font-bold">R$</span>
+          <input 
+            type="number" 
+            value={input.extraExpenses || ''}
+            onChange={e => setInput({...input, extraExpenses: parseFloat(e.target.value) || 0})}
+            className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            placeholder="0.00 (Opcional - Ex: Taxas Aduaneiras/Despacho)"
+          />
+        </div>
+      </div>
+
       {/* Tributação */}
       <div className="space-y-4 pt-4 border-t border-gray-100">
         <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">

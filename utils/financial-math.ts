@@ -15,6 +15,7 @@ export interface CalculationInput {
   quantity: number;
   freightValue: number;
   freightCurrency: 'USD' | 'BRL';
+  extraExpenses: number; // Custos extras totais em R$ (Despacho, Armazenagem, Taxas fixas)
   
   // Parâmetros Econômicos
   exchangeRate: number; // Dólar PTAX
@@ -71,6 +72,7 @@ export const calculateLandedCost = (input: CalculationInput): CalculationResult 
     quantity,
     freightValue,
     freightCurrency,
+    extraExpenses = 0,
     exchangeRate,
     spreadPercent,
     iofPercent,
@@ -143,7 +145,9 @@ export const calculateLandedCost = (input: CalculationInput): CalculationResult 
     ? (freightValue * effectiveExchangeRate) 
     : freightValue;
     
-  const landedCostTotal = productCostRealBRL + freightCostRealBRL + importDutyBRL + icmsBRL;
+  // Despesas Extras entram direto no custo e não sofrem taxa cambial (são em R$)
+  
+  const landedCostTotal = productCostRealBRL + freightCostRealBRL + importDutyBRL + icmsBRL + extraExpenses;
   const landedCostUnit = landedCostTotal / quantity;
 
   /**

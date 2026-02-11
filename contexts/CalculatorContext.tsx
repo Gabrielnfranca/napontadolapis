@@ -31,6 +31,7 @@ const DEFAULT_INPUT: CalculationInput = {
   quantity: 1,
   freightValue: 0,
   freightCurrency: 'USD',
+  extraExpenses: 0,
   exchangeRate: 0, // Será preenchido pela API
   spreadPercent: 0,
   iofPercent: 0, 
