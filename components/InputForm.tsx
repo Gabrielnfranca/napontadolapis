@@ -157,10 +157,10 @@ export default function InputForm() {
         </p>
       </div>
 
-      {/* Outras Despesas (Novo Campo) */}
+      {/* Outras Despesas (Novo Campo com Sugestões) */}
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1" title="Adicione custos como: Despacho Postal, Taxa DHL, Armazenagem, Capatazia (Total)">
-          Outras Despesas (R$ Total)
+        <label className="block text-sm font-medium text-gray-600 mb-1" title="Custos administrativos cobrados quando a carga chega no Brasil">
+          Outras Despesas / Taxas de Despacho
         </label>
         <div className="relative">
           <span className="absolute left-3 top-2 text-gray-500 text-sm font-bold">R$</span>
@@ -169,8 +169,32 @@ export default function InputForm() {
             value={input.extraExpenses || ''}
             onChange={e => setInput({...input, extraExpenses: parseFloat(e.target.value) || 0})}
             className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            placeholder="0.00 (Opcional - Ex: Taxas Aduaneiras/Despacho)"
+            placeholder="0.00"
           />
+        </div>
+        
+        {/* Botões de Sugestão Rápida */}
+        <div className="flex gap-2 mt-2">
+           <button 
+             onClick={() => setInput(prev => ({ ...prev, extraExpenses: 16.00 }))}
+             className="text-xs px-2 py-1 bg-yellow-50 text-yellow-700 rounded border border-yellow-200 hover:bg-yellow-100 transition-colors"
+             title="Taxa de Despacho Postal dos Correios"
+           >
+             + Correios (R$ 16)
+           </button>
+           <button 
+             onClick={() => setInput(prev => ({ ...prev, extraExpenses: 100.00 }))}
+             className="text-xs px-2 py-1 bg-red-50 text-red-700 rounded border border-red-200 hover:bg-red-100 transition-colors"
+             title="Taxa Administrativa média de DHL/FedEx/UPS"
+           >
+             + DHL/FedEx (~R$ 100)
+           </button>
+           <button 
+             onClick={() => setInput(prev => ({ ...prev, extraExpenses: 0 }))}
+             className="text-xs px-2 py-1 bg-gray-50 text-gray-600 rounded border border-gray-200 hover:bg-gray-100"
+           >
+             Zerar
+           </button>
         </div>
       </div>
 
