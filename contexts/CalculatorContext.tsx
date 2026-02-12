@@ -30,7 +30,7 @@ const DEFAULT_INPUT: CalculationInput = {
   productFeatures: '',
   productCostValue: 0,
   productCurrency: 'USD',
-  quantity: 1,
+  quantity: 0,
   freightValue: 0,
   freightCurrency: 'USD',
   extraExpenses: 0,

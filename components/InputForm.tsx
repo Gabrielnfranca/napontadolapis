@@ -134,7 +134,7 @@ export default function InputForm() {
       setInput(prev => ({
           ...prev,
           productCostValue: 0,
-          quantity: 1,
+          quantity: 0,
           freightValue: 0,
           extraExpenses: 0,
           productName: '',
