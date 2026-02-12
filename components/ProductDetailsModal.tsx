@@ -114,8 +114,20 @@ export default function ProductDetailsModal({ sku, onClose, onRegenerate }: Prod
                  <div className="md:col-span-2">
                    {renderSection("Descrição Persuasiva", (
                      <div className="relative group">
-                       <div className="bg-gray-50 border border-gray-100 p-4 rounded-lg text-sm text-gray-700 whitespace-pre-wrap font-sans leading-relaxed prose prose-sm max-w-none">
-                         <ReactMarkdown>{mkt.description}</ReactMarkdown>
+                       <div className="bg-gray-50 border border-gray-100 p-4 rounded-lg text-sm text-gray-700 font-sans leading-relaxed">
+                         <ReactMarkdown
+                            components={{
+                                h1: ({node, ...props}) => <h1 className="text-xl font-black text-gray-900 border-b border-gray-200 pb-2 mb-4 mt-2" {...props} />,
+                                h2: ({node, ...props}) => <h2 className="text-base font-bold text-gray-800 mt-6 mb-2 uppercase tracking-wide flex items-center gap-2" {...props} />,
+                                h3: ({node, ...props}) => <h3 className="text-sm font-bold text-gray-800 mt-4 mb-1" {...props} />,
+                                p: ({node, ...props}) => <p className="mb-3 leading-relaxed" {...props} />,
+                                ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-4 space-y-1 text-gray-600 marker:text-blue-500" {...props} />,
+                                li: ({node, ...props}) => <li className="pl-1" {...props} />,
+                                strong: ({node, ...props}) => <strong className="font-bold text-gray-900" {...props} />,
+                            }}
+                         >
+                            {mkt.description}
+                         </ReactMarkdown>
                        </div>
                        <button onClick={() => copyToClipboard(mkt.description, 'desc')} className="absolute top-2 right-2 bg-white shadow-sm border border-gray-200 p-1.5 rounded text-gray-500 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
                          {copied === 'desc' ? <Check className="w-4 h-4"/> : <Copy className="w-4 h-4"/>}
