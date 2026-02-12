@@ -221,9 +221,40 @@ function SKURow({ sku, onViewText, onSelectSku }: SKURowProps) {
 }
 
 export default function SKUList() {
-  const { savedSKUs } = useCalculator();
+  const { savedSKUs, updateSavedSKU } = useCalculator();
   const [selectedSku, setSelectedSku] = useState<SavedSKU | null>(null);
   const [viewText, setViewText] = useState<{title: string, content: string} | null>(null);
+
+  const handleRegenerateFull = async (sku: SavedSKU) => {
+    try {
+        const response = await fetch('/api/generate-copy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                productName: sku.name,
+                features: sku.input.productFeatures || '',
+                reference: '' 
+            })
+        });
+        
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Falha ao conectar com a IA');
+        }
+        
+        await updateSavedSKU(sku.id, { marketing_kit: data });
+        // Atualiza o selecionado localmente para refletir na modal imediatamente se necessário
+        // (O updateSavedSKU deve disparar re-render, mas selectedSku é state local desconectado do array principal se não for re-buscado)
+        // Como selectedSku é apenas uma referencia do objeto inicial, precisamos atualizar ele também ou confiar que o React atualize o array e passamos o novo objeto.
+        // O pattern melhor é selectedSku ser apenas o ID. Mas aqui estamos usando objeto.
+        setSelectedSku(prev => prev ? ({ ...prev, marketing_kit: data }) : null);
+        
+    } catch (error: any) {
+        console.error(error);
+        alert(`Erro: ${error.message}`);
+    }
+  };
 
   if (savedSKUs.length === 0) return null;
 
@@ -296,7 +327,11 @@ export default function SKUList() {
     
     {/* Modal de KIT DE VENDAS Completo */}
     {selectedSku && (
-        <ProductDetailsModal sku={selectedSku} onClose={() => setSelectedSku(null)} />
+        <ProductDetailsModal 
+            sku={selectedSku} 
+            onClose={() => setSelectedSku(null)} 
+            onRegenerate={() => handleRegenerateFull(selectedSku)}
+        />
     )}
 
     {/* Modal Rápido de Texto */}

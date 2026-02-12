@@ -1,20 +1,30 @@
 'use client';
 
 import { SavedSKU } from '@/contexts/CalculatorContext';
-import { X, Copy, Check, ShoppingBag, FileText, List, Tag, Box, Star, HelpCircle, ShieldCheck } from 'lucide-react';
+import { X, Copy, Check, ShoppingBag, FileText, List, Tag, Box, Star, HelpCircle, ShieldCheck, Wand2, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 interface ProductDetailsModalProps {
   sku: SavedSKU;
   onClose: () => void;
+  onRegenerate: () => Promise<void>;
 }
 
-export default function ProductDetailsModal({ sku, onClose }: ProductDetailsModalProps) {
+export default function ProductDetailsModal({ sku, onClose, onRegenerate }: ProductDetailsModalProps) {
   const [copied, setCopied] = useState<string | null>(null);
+  const [isRegenerating, setIsRegenerating] = useState(false);
   
   const mkt = sku.marketing_kit;
   
+  const handleRegenerateClick = async () => {
+    if (confirm("Isso irá substituir o título e descrição atuais por uma nova versão criada pela IA. Deseja continuar?")) {
+        setIsRegenerating(true);
+        await onRegenerate();
+        setIsRegenerating(false);
+    }
+  };
+
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopied(id);
@@ -43,9 +53,19 @@ export default function ProductDetailsModal({ sku, onClose }: ProductDetailsModa
                <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-bold">Lucro: R$ {sku.netProfit.toFixed(2)}</span>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full text-gray-500">
-            <X className="w-6 h-6" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+                onClick={handleRegenerateClick}
+                disabled={isRegenerating}
+                className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium border border-indigo-100 disabled:opacity-50"
+            >
+                {isRegenerating ? <Loader2 className="w-4 h-4 animate-spin"/> : <Wand2 className="w-4 h-4"/>}
+                {isRegenerating ? 'Gerando...' : 'Gerar Nova Copy'}
+            </button>
+            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full text-gray-500">
+                <X className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
         {/* Content Scrollable */}
