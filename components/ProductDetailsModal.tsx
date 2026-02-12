@@ -3,6 +3,7 @@
 import { SavedSKU } from '@/contexts/CalculatorContext';
 import { X, Copy, Check, ShoppingBag, FileText, List, Tag, Box, Star, HelpCircle, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 interface ProductDetailsModalProps {
   sku: SavedSKU;
@@ -93,8 +94,8 @@ export default function ProductDetailsModal({ sku, onClose }: ProductDetailsModa
                  <div className="md:col-span-2">
                    {renderSection("Descrição Persuasiva", (
                      <div className="relative group">
-                       <div className="bg-gray-50 border border-gray-100 p-4 rounded-lg text-sm text-gray-700 whitespace-pre-wrap font-sans leading-relaxed">
-                         {mkt.description}
+                       <div className="bg-gray-50 border border-gray-100 p-4 rounded-lg text-sm text-gray-700 whitespace-pre-wrap font-sans leading-relaxed prose prose-sm max-w-none">
+                         <ReactMarkdown>{mkt.description}</ReactMarkdown>
                        </div>
                        <button onClick={() => copyToClipboard(mkt.description, 'desc')} className="absolute top-2 right-2 bg-white shadow-sm border border-gray-200 p-1.5 rounded text-gray-500 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
                          {copied === 'desc' ? <Check className="w-4 h-4"/> : <Copy className="w-4 h-4"/>}
