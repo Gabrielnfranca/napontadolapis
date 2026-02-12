@@ -112,7 +112,7 @@ function SKURow({ sku, onViewText, onSelectSku }: SKURowProps) {
                     <Loader2 className="w-3 h-3 animate-spin" /> Gerando...
                  </div>
             ) : aiTitle ? (
-                <div onClick={() => onViewText('Título do Anúncio', aiTitle)} className="flex items-center gap-2 group/text h-full w-full">
+                <div onClick={() => onSelectSku(sku)} className="flex items-center gap-2 group/text h-full w-full">
                     <span className="truncate max-w-[240px] italic text-indigo-700 font-medium">{aiTitle}</span>
                     <Eye className="w-3 h-3 text-indigo-300 opacity-0 group-hover/text:opacity-100" />
                 </div>
@@ -128,7 +128,7 @@ function SKURow({ sku, onViewText, onSelectSku }: SKURowProps) {
             {isGenerating ? (
                  <span className="text-[10px] text-gray-400">Aguarde...</span>
             ) : aiFeatures ? (
-                <div onClick={() => onViewText('Descrição de Vendas', aiFeatures)} className="flex items-center gap-2 group/text h-full w-full">
+                <div onClick={() => onSelectSku(sku)} className="flex items-center gap-2 group/text h-full w-full">
                     <FileText className="w-3 h-3 text-indigo-400 shrink-0" />
                     <span className="truncate max-w-[220px] text-gray-500 text-[11px]">{aiFeatures.substring(0, 50)}...</span>
                 </div>
